@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<artifactId>stomp-chat</artifactId>
-		<groupId>com.jitterted</groupId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>stomp-chat</artifactId>
+    <groupId>com.jitterted</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>stomp-chat-backend</artifactId>
+  <artifactId>stomp-chat-backend</artifactId>
 
-	<properties>
-		<java.version>11</java.version>
-	</properties>
+  <name>STOMP Chat Back-end</name>
+  <description>Spring Boot back-end for the STOMP-based chat application</description>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
-		</dependency>
+  <properties>
+    <java.version>11</java.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
