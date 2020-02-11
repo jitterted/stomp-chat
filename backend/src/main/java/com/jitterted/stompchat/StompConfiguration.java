@@ -26,9 +26,10 @@ public class StompConfiguration implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
-    // websocket/STOMP endpoint is /ws, so websocket connects to http://stompchat.com/ws
-    // allow CORS from anywhere
-    registry.addEndpoint("/ws").setAllowedOrigins("*");
+    // websocket/STOMP endpoint is /ws, so websocket connects to ws://localhost:8080/ws
+    // when running locally
+    registry.addEndpoint("/ws")
+            .setAllowedOrigins("*");  // allow CORS from anywhere
   }
 
   @Override

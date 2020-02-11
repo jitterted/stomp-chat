@@ -54,10 +54,10 @@ Of the three, recommend using the "new" Stomp.js. Unfortunately, the one most co
 3. Front-end
     1. Create front-end form with input for chat message and button to send the message
     1. Display messages received on websocket/stomp
-    1. ?? Write test ??
 
 
 -- Part 2 --
+* ?? How to Write test for front- and back-end ??
 * Add logging in for username (no AuthN)
 * Add server modifies chat messages by prepending username and timestamp to messages
 * Change to use structured chat messages with username, timestamp, etc., in an object
