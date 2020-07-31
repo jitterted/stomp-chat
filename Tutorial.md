@@ -2,12 +2,32 @@
 
 * vue-devtools extension
 
-## Back-end with Spring Boot and 
+## Back-end with Spring Boot
 
-1. Created Spring Boot app from the Spring Initalizr
+1. Created Spring Boot app from the Spring Starter
     1. Split this pom.xml into two parts: 
-        * Parent of the project: requires the Spring parent setup and modules section for the two modules,
-         "backend" and "frontend"
+        * Parent of the project: requires the typical Spring Boot parent setup:
+
+            ```
+            <parent>
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-starter-parent</artifactId>
+              <version>2.3.2.RELEASE</version>
+              <relativePath/> <!-- lookup parent from repository -->
+            </parent>
+            ```
+         
+          Our top-level module requires the typical G/A/V, but the packaging needs to be specified as "pom",
+          since we're note building a JAR at this level (that happens in the backend module).
+          
+            ```
+            <groupId>com.jitterted</groupId>
+            <artifactId>stomp-chat</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <packaging>pom</packaging>
+            ```
+
+          Add a `modules` section for the two modules, `backend` and `frontend`:
          
             ```
             <modules>
@@ -16,7 +36,9 @@
             </modules>
             ```
           
-        * backend module: gets all the dependencies and plugins for Spring Boot, points to top-level pom.xml for its parent
+        * `backend` module: gets all the dependencies and plugins for Spring Boot, points to our top-level pom.xml
+           for its parent
+
             ```
           	<parent>
           		<artifactId>stomp-chat</artifactId>
@@ -24,9 +46,10 @@
           		<version>0.0.1-SNAPSHOT</version>
           	</parent>
             ```
+          
           but does not need anything other than the <artifactId>, as its <groupId> is inherited from the parent
 
-        * frontend module: a new pom.xml with just the basics, otherwise it's the Vue-created project
+        * `frontend` module: a new pom.xml with just the basics, otherwise it's the Vue-created project
     
 2. Configure Spring Boot to work with WebSockets and STOMP
 
@@ -82,7 +105,7 @@
 
 ## Front-end with Vue.js and Stomp.js
 
-1. Add stomp/stompjs (v5.4.3 as of this writing) to the project: yarn add @stomp/stompjs or npm i @stomp/stompjs
+1. Add [stomp/stompjs](https://github.com/stomp-js/stompjs) (v5.4.4 as of this writing) to the project: `yarn add @stomp/stompjs` or `npm i @stomp/stompjs`
     * Not to be confused with just "stompjs" that is 6 years old
     * Usage docs are here: https://stomp-js.github.io/guide/stompjs/using-stompjs-v5.html
 
@@ -92,7 +115,7 @@
     import {Client} from "@stomp/stompjs";
     ```
 
-3. Create a STOMP client instance in the `created()` function, with configuration as follows:
+3. Create a STOMP client instance in the `created()` function, with the configuration as follows:
 
     ```
     created() {
@@ -107,6 +130,8 @@
    
    The `brokerURL` points to the Spring Boot back-end endpoint of `/ws` as that's what we defined in
    the `WebSocketConfig` Java class in its `registerStompEndpoints` method.
+   
+   **NOTE**: For production, instead of `ws://`, you'll want to use `wss://` for a secure WebSockets connection.
    
    Here the `debug` function is used to display runtime debugging info about connections,
    subscriptions, and messages sent and received.
@@ -125,9 +150,9 @@
 6. Run the back-end, where you'll see the following in the log output
 
     ```
-    2020-02-10 13:38:18.455  INFO 2105 --- [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
-    2020-02-10 13:38:18.455  INFO 2105 --- [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [DefaultSubscriptionRegistry[cache[0 destination(s)], registry[0 sessions]]]]
-    2020-02-10 13:38:18.456  INFO 2105 --- [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+    2020-07-10 13:38:18.455  INFO 2105 --- [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+    2020-08-10 13:38:18.455  INFO 2105 --- [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [DefaultSubscriptionRegistry[cache[0 destination(s)], registry[0 sessions]]]]
+    2020-08-10 13:38:18.456  INFO 2105 --- [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
     ```
    
    This tells us that the STOMP broker is running.
@@ -138,9 +163,10 @@
     
 8. To fix this, we have two choices:
 
-    A. Run the Vue front-end on port 8081, and let Spring Boot run on 8080
+    A. Run the Vue front-end (what the browser will connect to) on port 8081, and let Spring Boot run on 8080
     
-    B. Run Spring Boot on 8081, and configure proxying so that `8080/ws` gets forwarded to `8081/ws`
+    B. Run Spring Boot on port 8081, and configure proxying so that `8080/ws` gets forwarded to `8081/ws`,
+       this way we wouldn't have to deal with CORS for local testing.
     
    We'll choose **A** here. See part II for setting up proxying. (or as a separate post?)
 
@@ -151,9 +177,9 @@
     (insert image of connect and connected messages)
 
 10. Now that we have verified that the front-end connected to the back-end,
-    we need to subscribe to a specific channel, often referred to as a "topic".
+    we need to subscribe to a specific _channel_, often referred to as a "topic".
     
-    In order to subscribe, we need to have already been connected, and to do this
+    In order to subscribe, we need to have first been connected. To do this
     with the StompJS client, we do the subscription in a callback that gets invoked
     when the connection is successful. For example:
     
